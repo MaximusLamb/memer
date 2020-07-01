@@ -6,7 +6,6 @@ const connect = require('../lib/utils/connect');
 const request = require('supertest');
 const app = require('../lib/app');
 const Meme = require('../lib/models/Meme');
-// const Meme = require('../lib/models/Meme');
 
 describe('Meme Routes', () => {
 
@@ -69,7 +68,25 @@ describe('Meme Routes', () => {
           image: 'placekitten.com',
           bottom: 'IS ALSO A CAT',
         }]);
-      });
-      
+      });  
+  });
+
+  it('gets a meme by id', async() => {
+
+    const newMeme = await Meme.create({
+      top: 'THIS IS A CAT',
+      image: 'placekitten.com'
+    });
+
+    return request(app)
+      .get(`/api/v1/memes/${newMeme._id}`)
+      .then(res => {
+        expect(res.body).toEqual({
+          __v: 0,
+          _id: newMeme.id,
+          top: 'THIS IS A CAT',
+          image: 'placekitten.com'
+        });
+      });  
   });
 });
