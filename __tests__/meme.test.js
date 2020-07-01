@@ -89,4 +89,45 @@ describe('Meme Routes', () => {
         });
       });  
   });
-});
+
+  it('gets a meme by id and updates it', async() => {
+
+    const newMeme = await Meme.create({
+      top: 'THIS IS A CAT',
+      image: 'placekitten.com'
+    });
+      
+    return request(app)
+      .put(`/api/v1/memes/${newMeme._id}`)
+      .send({ top: 'THIS IS A NEW CAT',
+        bottom: 'AND IT IS ADORABLE'
+      })
+      .then(res => {
+        expect(res.body).toEqual({
+          __v: 0,
+          _id: expect.anything(),
+          top: 'THIS IS A NEW CAT',
+          image: 'placekitten.com',
+          bottom: 'AND IT IS ADORABLE'
+        });
+      });
+  });
+
+  it('deletes a meme', async() => {
+
+    const newMeme = await Meme.create({
+      top: 'THIS IS A CAT',
+      image: 'placekitten.com'
+    });
+    return request(app)
+      .delete(`/api/v1/memes/${newMeme._id}`)
+      .then(res => {
+        expect(res.body).toEqual({
+          top: 'THIS IS A CAT',
+          image: 'placekitten.com',
+          _id: expect.anything(),
+          __v: 0
+        });
+      });
+  });
+});  
