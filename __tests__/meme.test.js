@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongod = new MongoMemoryServer();
 const mongoose = require('mongoose');
@@ -42,9 +44,9 @@ describe('Meme Routes', () => {
       });
   });
 
-  it('gets all memes', () => {
+  it('gets all memes', async() => {
 
-    Meme.create([{
+    await Meme.create([{
       top: 'THIS IS A CAT',
       image: 'placekitten.com'
     }, {
@@ -90,26 +92,28 @@ describe('Meme Routes', () => {
       });  
   });
 
-  it('gets a meme by id and updates it', async() => {
+  it('gets a meme by id and updates it', () => {
 
-    const newMeme = await Meme.create({
+    Meme.create({
       top: 'THIS IS A CAT',
       image: 'placekitten.com'
-    });
-      
-    return request(app)
-      .put(`/api/v1/memes/${newMeme._id}`)
-      .send({ top: 'THIS IS A NEW CAT',
-        bottom: 'AND IT IS ADORABLE'
-      })
-      .then(res => {
-        expect(res.body).toEqual({
-          __v: 0,
-          _id: expect.anything(),
-          top: 'THIS IS A NEW CAT',
-          image: 'placekitten.com',
-          bottom: 'AND IT IS ADORABLE'
-        });
+    })
+      .then(meme => {
+        return request(app)
+          .put(`/api/v1/memes/${meme._id}`)
+          .send({ 
+            top: 'THIS IS A NEW CAT',
+            bottom: 'AND IT IS ADORABLE'
+          })
+          .then(res => {
+            expect(res.body).toEqual({
+              __v: 0,
+              _id: expect.anything(),
+              top: 'THIS IS A NEW CAT',
+              image: 'placekitten.com',
+              bottom: 'AND IT IS ADORABLE'
+            });
+          });
       });
   });
 
